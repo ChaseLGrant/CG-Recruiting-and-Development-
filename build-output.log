@@ -1,0 +1,41 @@
+
+> summer-ball-portal@0.1.0 build
+> next build
+
+▲ Next.js 16.1.6 (Turbopack)
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 8.8s
+  Running TypeScript ...
+  Collecting page data using 1 worker ...
+  Generating static pages using 1 worker (0/16) ...
+  Generating static pages using 1 worker (4/16) 
+  Generating static pages using 1 worker (8/16) 
+  Generating static pages using 1 worker (12/16) 
+✓ Generating static pages using 1 worker (16/16) in 344.1ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ƒ /auth/callback
+├ ○ /auth/login
+├ ○ /auth/signup
+├ ○ /dashboard/coach
+├ ○ /dashboard/coach/bulk-add
+├ ○ /dashboard/coach/players
+├ ○ /dashboard/player
+├ ○ /dashboard/team
+├ ○ /dashboard/team/listings
+├ ○ /dashboard/team/listings/new
+├ ○ /listings
+├ ƒ /listings/[id]
+├ ○ /players
+└ ƒ /players/[id]
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
