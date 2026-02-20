@@ -19,10 +19,6 @@ export default function SetupPage() {
   const [health, setHealth] = useState<HealthStatus | null>(null)
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    checkHealth()
-  }, [])
-
   async function checkHealth() {
     setLoading(true)
     try {
@@ -34,6 +30,16 @@ export default function SetupPage() {
     }
     setLoading(false)
   }
+
+  useEffect(() => {
+    let cancelled = false
+    fetch('/api/health')
+      .then(res => res.json())
+      .then(data => { if (!cancelled) setHealth(data) })
+      .catch(() => { if (!cancelled) setHealth(null) })
+      .finally(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
+  }, [])
 
   const configured = health?.supabase?.configured ?? false
   const connected = health?.supabase?.connected ?? false

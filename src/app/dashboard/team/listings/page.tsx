@@ -19,31 +19,30 @@ export default function ManageListingsPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    load()
-  }, [])
+    async function load() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
 
-  async function load() {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
-
-    const { data: teamData } = await supabase
-      .from('teams')
-      .select('*')
-      .eq('created_by', user.id)
-      .single()
-
-    if (teamData) {
-      setTeam(teamData)
-      const { data: listingsData } = await supabase
-        .from('listings')
+      const { data: teamData } = await supabase
+        .from('teams')
         .select('*')
-        .eq('team_id', teamData.id)
-        .order('created_at', { ascending: false })
+        .eq('created_by', user.id)
+        .single()
 
-      if (listingsData) setListings(listingsData)
+      if (teamData) {
+        setTeam(teamData)
+        const { data: listingsData } = await supabase
+          .from('listings')
+          .select('*')
+          .eq('team_id', teamData.id)
+          .order('created_at', { ascending: false })
+
+        if (listingsData) setListings(listingsData)
+      }
+      setLoading(false)
     }
-    setLoading(false)
-  }
+    load()
+  }, [supabase])
 
   async function toggleActive(id: string, current: boolean) {
     const { error } = await supabase

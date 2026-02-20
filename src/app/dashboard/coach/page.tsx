@@ -28,10 +28,6 @@ export default function CoachDashboard() {
     coach_phone: '',
   })
 
-  useEffect(() => {
-    loadProgram()
-  }, [])
-
   async function loadProgram() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
@@ -55,6 +51,11 @@ export default function CoachDashboard() {
     }
     setLoading(false)
   }
+
+  useEffect(() => {
+    loadProgram()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault()

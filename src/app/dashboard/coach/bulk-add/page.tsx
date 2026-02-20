@@ -63,19 +63,18 @@ export default function BulkAddPage() {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
+    async function loadProgram() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+      const { data } = await supabase
+        .from('programs')
+        .select('*')
+        .eq('created_by', user.id)
+        .single()
+      if (data) setProgram(data)
+    }
     loadProgram()
-  }, [])
-
-  async function loadProgram() {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
-    const { data } = await supabase
-      .from('programs')
-      .select('*')
-      .eq('created_by', user.id)
-      .single()
-    if (data) setProgram(data)
-  }
+  }, [supabase])
 
   const addRow = () => setRows(prev => [...prev, EMPTY_ROW()])
 

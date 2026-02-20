@@ -18,32 +18,31 @@ export default function PlayerDetailPage() {
   const [sending, setSending] = useState(false)
 
   useEffect(() => {
-    loadPlayer()
-  }, [id])
+    async function loadPlayer() {
+      try {
+        const { data, error } = await supabase
+          .from('players')
+          .select('*, programs(*)')
+          .eq('id', id)
+          .single()
 
-  async function loadPlayer() {
-    try {
-      const { data, error } = await supabase
-        .from('players')
-        .select('*, programs(*)')
-        .eq('id', id)
-        .single()
-
-      if (error) {
-        console.error('Error loading player:', error.message)
-      }
-
-      if (data) {
-        setPlayer(data)
-        if (data.programs) {
-          setProgram(data.programs as unknown as Program)
+        if (error) {
+          console.error('Error loading player:', error.message)
         }
+
+        if (data) {
+          setPlayer(data)
+          if (data.programs) {
+            setProgram(data.programs as unknown as Program)
+          }
+        }
+      } catch (err) {
+        console.error('Error loading player:', err)
       }
-    } catch (err) {
-      console.error('Error loading player:', err)
+      setLoading(false)
     }
-    setLoading(false)
-  }
+    loadPlayer()
+  }, [id, supabase])
 
   async function sendInquiry() {
     setSending(true)

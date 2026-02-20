@@ -38,10 +38,6 @@ export default function PlayerDashboard() {
     contact_phone: '',
   })
 
-  useEffect(() => {
-    load()
-  }, [])
-
   async function load() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
@@ -87,6 +83,11 @@ export default function PlayerDashboard() {
     if (inqData) setInquiries(inqData)
     setLoading(false)
   }
+
+  useEffect(() => {
+    load()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault()
