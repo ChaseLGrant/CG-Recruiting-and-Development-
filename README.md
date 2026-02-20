@@ -31,37 +31,58 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 
 ## Deploy on Vercel
 
-### Quick Setup
+### ⚠️ IMPORTANT: Common 404 Fix
 
-1. Go to [Vercel Dashboard](https://vercel.com/dashboard) → **Add New Project**
-2. **Import** the GitHub repository: `ChaseLGrant/CG-Recruiting-and-Development-` (note the trailing hyphen in the repo name)
-3. Ensure the following settings:
-   - **Framework Preset**: Next.js
-   - **Root Directory**: `./` (leave as default)
-   - **Build Command**: `npm run build`
-   - **Install Command**: `npm install`
-   - **Node.js Version**: 20.x
+If you see a Vercel 404 error like `404: NOT_FOUND` with a code like `sfo1:sfo1::xxxxx`, the issue is almost always that your **Vercel project is not connected to the correct GitHub repository and branch**. Follow the steps below carefully.
 
-### Environment Variables
+### Step 1: Delete Old Vercel Project (if one exists)
 
-Add these in Vercel → Project Settings → Environment Variables:
+If you have an existing Vercel project that's showing 404:
 
-| Variable | Description |
-|---|---|
-| `NEXT_PUBLIC_SUPABASE_URL` | Your Supabase project URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Your Supabase anonymous key |
+1. Go to [Vercel Dashboard](https://vercel.com/dashboard)
+2. Click on the project showing the 404 error
+3. Go to **Settings** → scroll to the bottom → **Delete Project**
+4. Confirm deletion
 
-> **Note**: The app will build and deploy without Supabase env vars, but auth features will be disabled.
+### Step 2: Create a New Vercel Project
 
-### Verify Deployment
+1. Go to [Vercel Dashboard](https://vercel.com/dashboard) → click **Add New...** → **Project**
+2. Under **Import Git Repository**, find and select: **`ChaseLGrant/CG-Recruiting-and-Development-`**
+   - ⚠️ **Note the trailing hyphen `-`** in the repo name — make sure you select the correct repo
+   - If you don't see it, click **Adjust GitHub App Permissions** and grant access to this repo
+3. Configure the project:
+   - **Framework Preset**: should auto-detect as **Next.js** ✓
+   - **Root Directory**: leave as `./` (default) ✓
+   - **Build Command**: `npm run build` (should be auto-filled) ✓
+   - **Install Command**: `npm install` (should be auto-filled) ✓
+   - **Node.js Version**: `20.x` ✓
+4. Under **Environment Variables**, add (optional — app works without these but auth will be disabled):
+   - `NEXT_PUBLIC_SUPABASE_URL` = your Supabase project URL
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY` = your Supabase anon key
+5. Click **Deploy**
 
-After deploying, visit `https://your-domain.vercel.app/api/health` to confirm the deployment is working. You should see a JSON response with `"status": "ok"`.
+### Step 3: Verify Deployment
 
-### Troubleshooting 404 Errors
+After the build completes (usually 1-2 minutes):
 
-- Ensure the Vercel project is connected to the correct GitHub repository (`ChaseLGrant/CG-Recruiting-and-Development-`) and branch (`main`)
-- Check the Vercel deployment logs for build errors
-- Confirm the Framework Preset is set to **Next.js** in project settings
-- Try redeploying from the Vercel dashboard
+1. Vercel will show a "Congratulations!" page with your deployment URL
+2. Click the URL or visit `https://your-project-name.vercel.app`
+3. You should see the Summer Ball Portal homepage
+4. Also test: `https://your-project-name.vercel.app/api/health` — should return `{"status":"ok"}`
+
+### Troubleshooting
+
+| Problem | Solution |
+|---------|----------|
+| **404: NOT_FOUND** with Vercel error ID | Your Vercel project isn't connected to the right repo. Follow Steps 1-2 above to recreate it |
+| **Build fails** | Check the build logs in Vercel Dashboard → Deployments → click the failed deployment |
+| **Page loads but auth doesn't work** | Add `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` in Vercel → Settings → Environment Variables, then redeploy |
+| **"Middleware" deprecation warning** | Make sure you're deploying from the `main` branch after merging this PR — the deprecated middleware.ts has been removed |
+| **Domain not working** | In Vercel → Settings → Domains, make sure a domain is assigned to the project |
+
+### Production Branch
+
+Make sure Vercel is set to deploy from the **`main`** branch:
+- Vercel Dashboard → Project → Settings → Git → **Production Branch** should be `main`
 
 Check out the [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
