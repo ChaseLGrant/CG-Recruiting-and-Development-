@@ -34,7 +34,7 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 ### Quick Setup
 
 1. Go to [Vercel Dashboard](https://vercel.com/dashboard) → **Add New Project**
-2. **Import** the GitHub repository: `ChaseLGrant/CG-Recruiting-and-Development-`
+2. **Import** the GitHub repository: `ChaseLGrant/CG-Recruiting-and-Development-` (note the trailing hyphen in the repo name)
 3. Ensure the following settings:
    - **Framework Preset**: Next.js
    - **Root Directory**: `./` (leave as default)
