@@ -18,10 +18,6 @@ export default function BrowsePlayersPage() {
   const [availStart, setAvailStart] = useState('')
   const [availEnd, setAvailEnd] = useState('')
 
-  useEffect(() => {
-    searchPlayers()
-  }, [])
-
   async function searchPlayers() {
     setLoading(true)
 
@@ -72,6 +68,11 @@ export default function BrowsePlayersPage() {
     }
     setLoading(false)
   }
+
+  useEffect(() => {
+    searchPlayers()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault()

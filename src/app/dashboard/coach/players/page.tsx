@@ -20,22 +20,21 @@ export default function ManagePlayersPage() {
   const [editForm, setEditForm] = useState<Partial<Player>>({})
 
   useEffect(() => {
+    async function loadPlayers() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+
+      const { data } = await supabase
+        .from('players')
+        .select('*')
+        .eq('created_by_coach_id', user.id)
+        .order('created_at', { ascending: false })
+
+      if (data) setPlayers(data)
+      setLoading(false)
+    }
     loadPlayers()
-  }, [])
-
-  async function loadPlayers() {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
-
-    const { data } = await supabase
-      .from('players')
-      .select('*')
-      .eq('created_by_coach_id', user.id)
-      .order('created_at', { ascending: false })
-
-    if (data) setPlayers(data)
-    setLoading(false)
-  }
+  }, [supabase])
 
   async function handleDelete(id: string) {
     if (!confirm('Are you sure you want to delete this player?')) return

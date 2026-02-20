@@ -18,10 +18,6 @@ export default function BrowseListingsPage() {
   const [seasonStart, setSeasonStart] = useState('')
   const [seasonEnd, setSeasonEnd] = useState('')
 
-  useEffect(() => {
-    searchListings()
-  }, [])
-
   async function searchListings() {
     setLoading(true)
 
@@ -78,6 +74,11 @@ export default function BrowseListingsPage() {
     }
     setLoading(false)
   }
+
+  useEffect(() => {
+    searchListings()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault()

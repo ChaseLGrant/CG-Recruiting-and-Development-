@@ -17,32 +17,31 @@ export default function ListingDetailPage() {
   const [sending, setSending] = useState(false)
 
   useEffect(() => {
-    loadListing()
-  }, [id])
+    async function loadListing() {
+      try {
+        const { data, error } = await supabase
+          .from('listings')
+          .select('*, teams(*)')
+          .eq('id', id)
+          .single()
 
-  async function loadListing() {
-    try {
-      const { data, error } = await supabase
-        .from('listings')
-        .select('*, teams(*)')
-        .eq('id', id)
-        .single()
-
-      if (error) {
-        console.error('Error loading listing:', error.message)
-      }
-
-      if (data) {
-        setListing(data)
-        if (data.teams) {
-          setTeam(data.teams as unknown as Team)
+        if (error) {
+          console.error('Error loading listing:', error.message)
         }
+
+        if (data) {
+          setListing(data)
+          if (data.teams) {
+            setTeam(data.teams as unknown as Team)
+          }
+        }
+      } catch (err) {
+        console.error('Error loading listing:', err)
       }
-    } catch (err) {
-      console.error('Error loading listing:', err)
+      setLoading(false)
     }
-    setLoading(false)
-  }
+    loadListing()
+  }, [id, supabase])
 
   async function sendInquiry() {
     setSending(true)

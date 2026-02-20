@@ -29,10 +29,6 @@ export default function TeamDashboard() {
     description: '',
   })
 
-  useEffect(() => {
-    loadTeam()
-  }, [])
-
   async function loadTeam() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
@@ -57,6 +53,11 @@ export default function TeamDashboard() {
     }
     setLoading(false)
   }
+
+  useEffect(() => {
+    loadTeam()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault()

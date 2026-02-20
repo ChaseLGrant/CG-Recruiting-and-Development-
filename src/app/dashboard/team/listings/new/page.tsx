@@ -34,24 +34,23 @@ export default function NewListingPage() {
   })
 
   useEffect(() => {
-    loadTeam()
-  }, [])
-
-  async function loadTeam() {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
-    const { data } = await supabase
-      .from('teams')
-      .select('*')
-      .eq('created_by', user.id)
-      .single()
-    if (data) {
-      setTeam(data)
-      if (data.contact_email) {
-        setForm(prev => ({ ...prev, contact_email: data.contact_email || '' }))
+    async function loadTeam() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+      const { data } = await supabase
+        .from('teams')
+        .select('*')
+        .eq('created_by', user.id)
+        .single()
+      if (data) {
+        setTeam(data)
+        if (data.contact_email) {
+          setForm(prev => ({ ...prev, contact_email: data.contact_email || '' }))
+        }
       }
     }
-  }
+    loadTeam()
+  }, [supabase])
 
   function togglePosition(pos: string) {
     setForm(prev => ({
