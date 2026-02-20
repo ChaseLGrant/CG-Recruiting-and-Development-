@@ -31,30 +31,37 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 
 ## Deploy on Vercel
 
-### ⚠️ IMPORTANT: Common 404 Fix
+### ⚠️ IMPORTANT: You Have Multiple Repos With Similar Names!
 
-If you see a Vercel 404 error like `404: NOT_FOUND` with a code like `sfo1:sfo1::xxxxx`, the issue is almost always that your **Vercel project is not connected to the correct GitHub repository and branch**. Follow the steps below carefully.
+Your GitHub account has several repos with similar names. **Vercel must be connected to the correct one**:
 
-### Step 1: Delete Old Vercel Project (if one exists)
+| Repository | Has App Code? | Use This? |
+|---|---|---|
+| **`CG-Recruiting-and-Development-`** | ✅ Yes — full Next.js app | ✅ **USE THIS ONE** |
+| `CG_Recruiting-Development-` | ❌ Only has a README | ❌ Wrong repo |
+| `CG3-Recruiting-and-Development-` | ❌ Empty | ❌ Wrong repo |
+| `cg_3-recruiting-and-development-` | ❌ Empty | ❌ Wrong repo |
 
-If you have an existing Vercel project that's showing 404:
+The correct repository is: **`ChaseLGrant/CG-Recruiting-and-Development-`** (note: hyphens not underscores, "and" included, trailing hyphen)
+
+### Step 1: Delete Old Vercel Project
 
 1. Go to [Vercel Dashboard](https://vercel.com/dashboard)
 2. Click on the project showing the 404 error
 3. Go to **Settings** → scroll to the bottom → **Delete Project**
 4. Confirm deletion
 
-### Step 2: Create a New Vercel Project
+### Step 2: Create New Vercel Project
 
 1. Go to [Vercel Dashboard](https://vercel.com/dashboard) → click **Add New...** → **Project**
-2. Under **Import Git Repository**, find and select: **`ChaseLGrant/CG-Recruiting-and-Development-`**
-   - ⚠️ **Note the trailing hyphen `-`** in the repo name — make sure you select the correct repo
-   - If you don't see it, click **Adjust GitHub App Permissions** and grant access to this repo
+2. Under **Import Git Repository**, find and select: **`CG-Recruiting-and-Development-`**
+   - ⚠️ Make sure it says **`CG-Recruiting-and-Development-`** (with hyphens and "and")
+   - **NOT** `CG_Recruiting-Development-` (underscores, no "and") — that repo only has a README!
+   - If you don't see it, click **Adjust GitHub App Permissions** and grant access
 3. Configure the project:
    - **Framework Preset**: should auto-detect as **Next.js** ✓
    - **Root Directory**: leave as `./` (default) ✓
-   - **Build Command**: `npm run build` (should be auto-filled) ✓
-   - **Install Command**: `npm install` (should be auto-filled) ✓
+   - **Build Command**: leave as default ✓
    - **Node.js Version**: `20.x` ✓
 4. Under **Environment Variables**, add (optional — app works without these but auth will be disabled):
    - `NEXT_PUBLIC_SUPABASE_URL` = your Supabase project URL
@@ -74,11 +81,10 @@ After the build completes (usually 1-2 minutes):
 
 | Problem | Solution |
 |---------|----------|
-| **404: NOT_FOUND** with Vercel error ID | Your Vercel project isn't connected to the right repo. Follow Steps 1-2 above to recreate it |
+| **404: NOT_FOUND** with Vercel error ID | Vercel is connected to the wrong repo. Delete the project and re-import **`CG-Recruiting-and-Development-`** (with hyphens) |
+| **Main branch "only has a README"** | You're looking at the wrong repo. The correct repo is **`CG-Recruiting-and-Development-`** which has the full app code |
 | **Build fails** | Check the build logs in Vercel Dashboard → Deployments → click the failed deployment |
 | **Page loads but auth doesn't work** | Add `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` in Vercel → Settings → Environment Variables, then redeploy |
-| **"Middleware" deprecation warning** | Make sure you're deploying from the `main` branch after merging this PR — the deprecated middleware.ts has been removed |
-| **Domain not working** | In Vercel → Settings → Domains, make sure a domain is assigned to the project |
 
 ### Production Branch
 
