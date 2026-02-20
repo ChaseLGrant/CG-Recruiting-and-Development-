@@ -39,8 +39,9 @@ export async function middleware(request: NextRequest) {
       redirectUrl.pathname = '/auth/login'
       return NextResponse.redirect(redirectUrl)
     }
-  } catch {
+  } catch (error) {
     // If Supabase is unavailable, allow the request to proceed
+    console.error('Middleware Supabase error:', error)
   }
 
   return supabaseResponse
