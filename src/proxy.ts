@@ -34,7 +34,11 @@ export async function proxy(request: NextRequest) {
   })
 
   // Refresh the auth token — this is the critical call that keeps sessions alive
-  await supabase.auth.getUser()
+  try {
+    await supabase.auth.getUser()
+  } catch {
+    // If Supabase is unreachable, let the request through without blocking
+  }
 
   return supabaseResponse
 }
