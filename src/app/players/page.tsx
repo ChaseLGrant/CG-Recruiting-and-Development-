@@ -25,42 +25,51 @@ export default function BrowsePlayersPage() {
   async function searchPlayers() {
     setLoading(true)
 
-    let query = supabase
-      .from('players')
-      .select('*, programs(college_name, location_city, location_state)')
-      .order('created_at', { ascending: false })
-      .limit(100)
+    try {
+      let query = supabase
+        .from('players')
+        .select('*, programs(college_name, location_city, location_state)')
+        .order('created_at', { ascending: false })
+        .limit(100)
 
-    if (position) {
-      query = query.or(`position_primary.eq.${position},position_secondary.eq.${position}`)
+      if (position) {
+        query = query.or(`position_primary.eq.${position},position_secondary.eq.${position}`)
+      }
+
+      if (gradYear) {
+        query = query.eq('grad_year', parseInt(gradYear))
+      }
+
+      if (availStart) {
+        query = query.lte('availability_start', availStart)
+      }
+
+      if (availEnd) {
+        query = query.gte('availability_end', availEnd)
+      }
+
+      const { data, error } = await query
+
+      if (error) {
+        console.error('Error fetching players:', error.message)
+      }
+
+      let results = data || []
+
+      // Client-side filter by program name (join search)
+      if (programSearch.trim()) {
+        const search = programSearch.toLowerCase()
+        results = results.filter(p => {
+          const prog = p.programs as { college_name: string } | null
+          return prog?.college_name?.toLowerCase().includes(search)
+        })
+      }
+
+      setPlayers(results)
+    } catch (err) {
+      console.error('Error searching players:', err)
+      setPlayers([])
     }
-
-    if (gradYear) {
-      query = query.eq('grad_year', parseInt(gradYear))
-    }
-
-    if (availStart) {
-      query = query.lte('availability_start', availStart)
-    }
-
-    if (availEnd) {
-      query = query.gte('availability_end', availEnd)
-    }
-
-    const { data } = await query
-
-    let results = data || []
-
-    // Client-side filter by program name (join search)
-    if (programSearch.trim()) {
-      const search = programSearch.toLowerCase()
-      results = results.filter(p => {
-        const prog = p.programs as { college_name: string } | null
-        return prog?.college_name?.toLowerCase().includes(search)
-      })
-    }
-
-    setPlayers(results)
     setLoading(false)
   }
 

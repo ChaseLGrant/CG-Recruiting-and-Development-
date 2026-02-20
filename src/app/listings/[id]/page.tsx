@@ -21,17 +21,25 @@ export default function ListingDetailPage() {
   }, [id])
 
   async function loadListing() {
-    const { data } = await supabase
-      .from('listings')
-      .select('*, teams(*)')
-      .eq('id', id)
-      .single()
+    try {
+      const { data, error } = await supabase
+        .from('listings')
+        .select('*, teams(*)')
+        .eq('id', id)
+        .single()
 
-    if (data) {
-      setListing(data)
-      if (data.teams) {
-        setTeam(data.teams as unknown as Team)
+      if (error) {
+        console.error('Error loading listing:', error.message)
       }
+
+      if (data) {
+        setListing(data)
+        if (data.teams) {
+          setTeam(data.teams as unknown as Team)
+        }
+      }
+    } catch (err) {
+      console.error('Error loading listing:', err)
     }
     setLoading(false)
   }

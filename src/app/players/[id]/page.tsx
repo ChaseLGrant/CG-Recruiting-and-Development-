@@ -22,17 +22,25 @@ export default function PlayerDetailPage() {
   }, [id])
 
   async function loadPlayer() {
-    const { data } = await supabase
-      .from('players')
-      .select('*, programs(*)')
-      .eq('id', id)
-      .single()
+    try {
+      const { data, error } = await supabase
+        .from('players')
+        .select('*, programs(*)')
+        .eq('id', id)
+        .single()
 
-    if (data) {
-      setPlayer(data)
-      if (data.programs) {
-        setProgram(data.programs as unknown as Program)
+      if (error) {
+        console.error('Error loading player:', error.message)
       }
+
+      if (data) {
+        setPlayer(data)
+        if (data.programs) {
+          setProgram(data.programs as unknown as Program)
+        }
+      }
+    } catch (err) {
+      console.error('Error loading player:', err)
     }
     setLoading(false)
   }
