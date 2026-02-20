@@ -8,7 +8,7 @@ import type { UserRole } from '@/lib/types'
 
 const CONNECTION_ERROR =
   'Could not connect to the database. This usually means the Supabase environment variables are missing or incorrect. ' +
-  'Make sure NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY are set in Vercel → Settings → Environment Variables, then redeploy.'
+  'Visit the /setup page for a step-by-step guide, or check that NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY are set in Vercel → Settings → Environment Variables, then redeploy.'
 
 function isFetchError(message: string) {
   return message === 'Failed to fetch' || message.includes('fetch')
@@ -162,6 +162,11 @@ function SignUpForm() {
           {error && (
             <div className="rounded-lg bg-error/10 px-4 py-2 text-sm text-error">
               {error}
+              {error.includes('Could not connect') && (
+                <Link href="/setup" className="mt-2 block font-semibold text-accent underline">
+                  Open Setup Guide →
+                </Link>
+              )}
             </div>
           )}
 
