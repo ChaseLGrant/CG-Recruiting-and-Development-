@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Navbar } from "@/components/navbar";
+import { NavbarErrorBoundary } from "@/components/navbar-error-boundary";
 
 export const metadata: Metadata = {
   title: "Summer Ball Portal",
@@ -18,7 +19,9 @@ export default function RootLayout({
         className="antialiased min-h-screen bg-background text-foreground"
         style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}
       >
-        <Navbar />
+        <NavbarErrorBoundary>
+          <Navbar />
+        </NavbarErrorBoundary>
         <main className="min-h-[calc(100vh-64px)]">
           {children}
         </main>
