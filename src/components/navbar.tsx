@@ -12,14 +12,19 @@ export function Navbar() {
 
   useEffect(() => {
     async function getProfile() {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        const { data } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', user.id)
-          .single()
-        if (data) setProfile(data)
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (user) {
+          const { data } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', user.id)
+            .single()
+          if (data) setProfile(data)
+        }
+      } catch (err) {
+        // Supabase not configured or unreachable — navbar still works without auth
+        console.error('Navbar auth check failed:', err)
       }
     }
     getProfile()
