@@ -31,6 +31,37 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 
 ## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Quick Setup
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Go to [Vercel Dashboard](https://vercel.com/dashboard) → **Add New Project**
+2. **Import** the GitHub repository: `ChaseLGrant/CG-Recruiting-and-Development-`
+3. Ensure the following settings:
+   - **Framework Preset**: Next.js
+   - **Root Directory**: `./` (leave as default)
+   - **Build Command**: `npm run build`
+   - **Install Command**: `npm install`
+   - **Node.js Version**: 20.x
+
+### Environment Variables
+
+Add these in Vercel → Project Settings → Environment Variables:
+
+| Variable | Description |
+|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | Your Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Your Supabase anonymous key |
+
+> **Note**: The app will build and deploy without Supabase env vars, but auth features will be disabled.
+
+### Verify Deployment
+
+After deploying, visit `https://your-domain.vercel.app/api/health` to confirm the deployment is working. You should see a JSON response with `"status": "ok"`.
+
+### Troubleshooting 404 Errors
+
+- Ensure the Vercel project is connected to the correct GitHub repository (`ChaseLGrant/CG-Recruiting-and-Development-`) and branch (`main`)
+- Check the Vercel deployment logs for build errors
+- Confirm the Framework Preset is set to **Next.js** in project settings
+- Try redeploying from the Vercel dashboard
+
+Check out the [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
