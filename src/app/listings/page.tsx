@@ -25,47 +25,57 @@ export default function BrowseListingsPage() {
   async function searchListings() {
     setLoading(true)
 
-    let query = supabase
-      .from('listings')
-      .select('*, teams(team_name, league_name, location_city, location_state)')
-      .eq('is_active', true)
-      .order('created_at', { ascending: false })
-      .limit(100)
+    try {
+      let query = supabase
+        .from('listings')
+        .select('*, teams(team_name, league_name, location_city, location_state)')
+        .eq('is_active', true)
+        .order('created_at', { ascending: false })
+        .limit(100)
 
-    if (seasonStart) {
-      query = query.gte('season_end', seasonStart)
-    }
-    if (seasonEnd) {
-      query = query.lte('season_start', seasonEnd)
-    }
-    if (position) {
-      query = query.contains('positions_needed', [position])
-    }
+      if (seasonStart) {
+        query = query.gte('season_end', seasonStart)
+      }
+      if (seasonEnd) {
+        query = query.lte('season_start', seasonEnd)
+      }
+      if (position) {
+        query = query.contains('positions_needed', [position])
+      }
 
-    const { data } = await query
-    let results = data || []
+      const { data, error } = await query
 
-    // Client-side filter
-    if (leagueSearch.trim()) {
-      const search = leagueSearch.toLowerCase()
-      results = results.filter(l => {
-        const team = l.teams as { team_name: string; league_name: string } | null
-        return (
-          team?.league_name?.toLowerCase().includes(search) ||
-          team?.team_name?.toLowerCase().includes(search) ||
-          l.listing_title.toLowerCase().includes(search)
-        )
-      })
+      if (error) {
+        console.error('Error fetching listings:', error.message)
+      }
+
+      let results = data || []
+
+      // Client-side filter
+      if (leagueSearch.trim()) {
+        const search = leagueSearch.toLowerCase()
+        results = results.filter(l => {
+          const team = l.teams as { team_name: string; league_name: string } | null
+          return (
+            team?.league_name?.toLowerCase().includes(search) ||
+            team?.team_name?.toLowerCase().includes(search) ||
+            l.listing_title.toLowerCase().includes(search)
+          )
+        })
+      }
+
+      if (state) {
+        results = results.filter(l => {
+          const team = l.teams as { location_state: string } | null
+          return team?.location_state === state
+        })
+      }
+
+      setListings(results)
+    } catch (err) {
+      console.error('Error searching listings:', err)
+      setListings([])
     }
-
-    if (state) {
-      results = results.filter(l => {
-        const team = l.teams as { location_state: string } | null
-        return team?.location_state === state
-      })
-    }
-
-    setListings(results)
     setLoading(false)
   }
 
