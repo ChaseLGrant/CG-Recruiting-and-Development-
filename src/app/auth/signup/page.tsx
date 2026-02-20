@@ -6,6 +6,14 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase-browser'
 import type { UserRole } from '@/lib/types'
 
+const CONNECTION_ERROR =
+  'Could not connect to the database. This usually means the Supabase environment variables are missing or incorrect. ' +
+  'Make sure NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY are set in Vercel → Settings → Environment Variables, then redeploy.'
+
+function isFetchError(message: string) {
+  return message === 'Failed to fetch' || message.includes('fetch')
+}
+
 function SignUpForm() {
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -17,6 +25,7 @@ function SignUpForm() {
   const [fullName, setFullName] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState(false)
 
   const supabase = createClient()
 
@@ -25,21 +34,45 @@ function SignUpForm() {
     setLoading(true)
     setError('')
 
-    const { error: signUpError } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { role, full_name: fullName },
-      },
-    })
+    try {
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { role, full_name: fullName },
+        },
+      })
 
-    if (signUpError) {
-      setError(signUpError.message)
+      if (signUpError) {
+        setError(isFetchError(signUpError.message) ? CONNECTION_ERROR : signUpError.message)
+        setLoading(false)
+        return
+      }
+
+      // If email confirmation is required, Supabase returns a user with
+      // identities = [] (user exists but not confirmed). Show a message.
+      if (data.user && data.user.identities && data.user.identities.length === 0) {
+        setError('This email is already registered. Please check your email for the confirmation link, or try logging in.')
+        setLoading(false)
+        return
+      }
+
+      // Check if email confirmation is needed
+      if (data.user && !data.session) {
+        setSuccess(true)
+        setLoading(false)
+        return
+      }
+
+      router.push(`/dashboard/${role}`)
+    } catch (err) {
+      if (err instanceof TypeError && isFetchError(err.message)) {
+        setError(CONNECTION_ERROR)
+      } else {
+        setError(err instanceof Error ? err.message : 'An unexpected error occurred')
+      }
       setLoading(false)
-      return
     }
-
-    router.push(`/dashboard/${role}`)
   }
 
   const roles: { value: UserRole; label: string; desc: string }[] = [
@@ -54,6 +87,19 @@ function SignUpForm() {
         <h1 className="mb-2 text-3xl font-bold">Create Account</h1>
         <p className="mb-8 text-muted">Join the Summer Ball Portal</p>
 
+        {success ? (
+          <div className="space-y-4">
+            <div className="rounded-lg bg-success/10 px-4 py-3 text-sm text-success">
+              <strong>Check your email!</strong> We sent a confirmation link to <strong>{email}</strong>. Click the link in the email to activate your account, then come back and log in.
+            </div>
+            <Link
+              href="/auth/login"
+              className="block w-full rounded-lg bg-accent py-3 text-center font-semibold text-white hover:bg-accent-hover"
+            >
+              Go to Login
+            </Link>
+          </div>
+        ) : (
         <form onSubmit={handleSignUp} className="space-y-6">
           <div>
             <label className="mb-2 block text-sm font-medium">I am a...</label>
@@ -127,6 +173,7 @@ function SignUpForm() {
             {loading ? 'Creating account...' : 'Create Account'}
           </button>
         </form>
+        )}
 
         <p className="mt-6 text-center text-sm text-muted">
           Already have an account?{' '}

@@ -5,6 +5,14 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase-browser'
 
+const CONNECTION_ERROR =
+  'Could not connect to the database. This usually means the Supabase environment variables are missing or incorrect. ' +
+  'Make sure NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY are set in Vercel → Settings → Environment Variables, then redeploy.'
+
+function isFetchError(message: string) {
+  return message === 'Failed to fetch' || message.includes('fetch')
+}
+
 export default function LoginPage() {
   const router = useRouter()
   const [email, setEmail] = useState('')
@@ -19,24 +27,39 @@ export default function LoginPage() {
     setLoading(true)
     setError('')
 
-    const { data, error: loginError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
+    try {
+      const { data, error: loginError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
 
-    if (loginError) {
-      setError(loginError.message)
+      if (loginError) {
+        if (isFetchError(loginError.message)) {
+          setError(CONNECTION_ERROR)
+        } else if (loginError.message === 'Email not confirmed') {
+          setError('Your email is not confirmed yet. Check your inbox for the confirmation link from Supabase.')
+        } else {
+          setError(loginError.message)
+        }
+        setLoading(false)
+        return
+      }
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', data.user.id)
+        .single()
+
+      router.push(`/dashboard/${profile?.role || 'player'}`)
+    } catch (err) {
+      if (err instanceof TypeError && isFetchError(err.message)) {
+        setError(CONNECTION_ERROR)
+      } else {
+        setError(err instanceof Error ? err.message : 'An unexpected error occurred')
+      }
       setLoading(false)
-      return
     }
-
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', data.user.id)
-      .single()
-
-    router.push(`/dashboard/${profile?.role || 'player'}`)
   }
 
   return (
