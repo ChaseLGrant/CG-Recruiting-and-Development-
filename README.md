@@ -1,147 +1,153 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Summer Ball Portal
 
-## Getting Started
+A Next.js app connecting college players with summer baseball opportunities. Uses Supabase for auth and database.
 
-First, run the development server:
+## 🚀 Connect Vercel to Supabase (Do This First!)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+You already have the app deployed on Vercel. Now connect it to Supabase so auth, sign-up, and the database work.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**There are 5 steps. The whole thing takes about 10 minutes.**
 
-## Connect to Supabase (Backend Setup)
+---
 
-The app uses [Supabase](https://supabase.com) for authentication, database, and row-level security. Follow these steps to set up the backend:
+### Step 1 → Create a Supabase project
 
-### Step 1: Create a Supabase Project
-
-1. Go to [supabase.com](https://supabase.com) and sign in (or create a free account)
+1. Go to **[supabase.com/dashboard](https://supabase.com/dashboard)** and sign in (or create a free account)
 2. Click **New Project**
-3. Choose your organization, give it a name (e.g. `summer-ball-portal`), set a database password, and select a region
-4. Click **Create new project** — wait ~2 minutes for it to provision
+3. Fill in:
+   - **Name**: `summer-ball-portal` (or whatever you want)
+   - **Database Password**: pick something strong and save it in a password manager
+   - **Region**: pick the one closest to you (e.g. East US)
+4. Click **Create new project** — wait ~2 minutes for it to finish setting up
 
-### Step 2: Run the Database Schema
+---
 
-1. In your Supabase project dashboard, go to **SQL Editor** (left sidebar)
+### Step 2 → Create the database tables
+
+1. In your Supabase project, click **SQL Editor** in the left sidebar
 2. Click **New query**
-3. Copy the **entire contents** of [`supabase/schema.sql`](supabase/schema.sql) from this repo and paste it into the editor
-4. Click **Run** (or press Ctrl+Enter)
-5. You should see "Success. No rows returned" — this means the tables, indexes, RLS policies, and trigger were all created
+3. Open the file [`supabase/schema.sql`](supabase/schema.sql) from this repo — copy **ALL** the contents
+4. Paste it into the SQL editor
+5. Click **Run** (or Ctrl+Enter)
+6. You should see ✅ "Success. No rows returned" — that means all tables were created
 
-The schema creates these tables:
-| Table | Purpose |
-|-------|---------|
-| `profiles` | User profiles (auto-created on signup via trigger) |
-| `programs` | College programs managed by coaches |
-| `players` | Player profiles with stats, availability, contact info |
-| `teams` | Summer teams/leagues |
-| `listings` | Open roster spots posted by teams |
-| `inquiries` | Messages between users |
+> This creates 6 tables: `profiles`, `programs`, `players`, `teams`, `listings`, `inquiries`, plus security policies and an auto-profile trigger.
 
-### Step 3: Get Your API Keys
+---
 
-1. In Supabase dashboard, go to **Settings** → **API** (under Configuration)
-2. You'll see two values you need:
-   - **Project URL** — looks like `https://abcdefghijkl.supabase.co`
-   - **anon public** key — a long `eyJ...` string (under "Project API keys")
+### Step 3 → Copy your Supabase API keys
 
-### Step 4: Configure Environment Variables
+1. In Supabase dashboard, click **Settings** (gear icon, left sidebar) → **API**
+2. You need two values from this page:
 
-#### For local development:
+| What to copy | Where to find it | Example |
+|---|---|---|
+| **Project URL** | Under "Project URL" | `https://abcdefghijkl.supabase.co` |
+| **anon public key** | Under "Project API keys" → `anon` `public` | `eyJhbGciOiJIUzI1NiIs...` (long string) |
 
-Create a `.env.local` file in the project root:
+Keep this page open — you'll paste these into Vercel next.
 
-```bash
-cp .env.local.example .env.local
-```
+---
 
-Edit `.env.local` and fill in your values:
+### Step 4 → Add the keys to Vercel
 
-```
-NEXT_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOi...your-anon-key
-```
+1. Go to **[vercel.com/dashboard](https://vercel.com/dashboard)**
+2. Click on your **Summer Ball Portal project**
+3. Go to **Settings** → **Environment Variables**
+4. Add two variables:
 
-#### For Vercel (production):
+| Name (Key) | Value (paste from Supabase) |
+|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | Your Project URL from Step 3 |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Your anon public key from Step 3 |
 
-1. Go to [Vercel Dashboard](https://vercel.com/dashboard) → your project → **Settings** → **Environment Variables**
-2. Add these two variables:
-   - `NEXT_PUBLIC_SUPABASE_URL` = your Supabase project URL
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY` = your Supabase anon key
-3. Click **Save**
-4. Go to **Deployments** → click the **...** menu on the latest deployment → **Redeploy**
+5. Click **Save** for each one
+6. Now **redeploy** so the new variables take effect:
+   - Go to **Deployments** tab
+   - Click the **⋮** menu on the latest deployment → **Redeploy**
+   - Wait for it to finish (~1 minute)
 
-### Step 5: Configure Auth Callback URL
+---
 
-1. In Supabase dashboard, go to **Authentication** → **URL Configuration**
-2. Set **Site URL** to your Vercel deployment URL (e.g. `https://your-project.vercel.app`)
-3. Under **Redirect URLs**, add:
-   - `https://your-project.vercel.app/auth/callback`
-   - `http://localhost:3000/auth/callback` (for local dev)
+### Step 5 → Configure auth redirect URLs
+
+1. Go back to **Supabase dashboard** → **Authentication** (left sidebar) → **URL Configuration**
+2. Set **Site URL** to your Vercel URL:
+   ```
+   https://your-project-name.vercel.app
+   ```
+3. Under **Redirect URLs**, click **Add URL** and add:
+   ```
+   https://your-project-name.vercel.app/auth/callback
+   ```
 4. Click **Save**
 
-### Step 6: Verify Everything Works
+> Replace `your-project-name` with your actual Vercel project URL (you can find it on the Vercel dashboard).
 
-1. Visit `https://your-project.vercel.app/api/health`
-2. You should see a JSON response like:
-   ```json
-   {
-     "status": "ok",
-     "supabase": {
-       "configured": true,
-       "connected": true,
-       "schemaReady": true,
-       "tables": ["profiles", "programs", "players", "teams", "listings", "inquiries"]
-     }
-   }
-   ```
-3. Try signing up at `https://your-project.vercel.app/auth/signup`
-4. After signup, you should be redirected to your role's dashboard
+---
 
-### Troubleshooting Supabase Connection
+### ✅ Verify it's working
 
-| Problem | Solution |
-|---------|----------|
-| `"configured": false` | Environment variables not set. Add `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` in Vercel → Settings → Environment Variables, then redeploy |
-| `"connected": false` | Check that your Supabase project URL and anon key are correct (no trailing spaces/newlines) |
-| `"schemaReady": false` | Database tables not created. Go to Supabase → SQL Editor and run the contents of `supabase/schema.sql` |
-| Signup works but no profile created | The `handle_new_user` trigger wasn't created. Re-run `supabase/schema.sql` |
-| "Invalid login credentials" | User doesn't exist, or email not confirmed. Check Supabase → Authentication → Users |
-| Auth callback redirect fails | Add your domain to Supabase → Authentication → URL Configuration → Redirect URLs |
+Visit your site's health check: `https://your-project-name.vercel.app/api/health`
+
+You should see:
+```json
+{
+  "status": "ok",
+  "supabase": {
+    "configured": true,
+    "connected": true,
+    "schemaReady": true,
+    "tables": ["profiles", "programs", "players", "teams", "listings", "inquiries"]
+  }
+}
+```
+
+Then try **signing up** at `https://your-project-name.vercel.app/auth/signup` — pick a role, enter your email and password, and you should land on your dashboard!
+
+> **Note**: By default Supabase requires email confirmation. For testing, you can disable this: Supabase → **Authentication** → **Providers** → **Email** → turn off **Confirm email**. Otherwise check your inbox for the confirmation link.
+
+---
+
+### Troubleshooting
+
+| What you see | What's wrong | Fix |
+|---|---|---|
+| `"configured": false` | Env vars not set in Vercel | Go to Vercel → Settings → Environment Variables, add both keys, then Redeploy |
+| `"connected": false` | Wrong URL or key | Double-check your Supabase URL and anon key — no trailing spaces |
+| `"schemaReady": false` | Tables not created | Go to Supabase → SQL Editor → run `supabase/schema.sql` again |
+| Signup says "error" | Supabase not connected | Check that env vars are correct and you redeployed after adding them |
+| Sign up works but no dashboard data | Trigger missing | Re-run `supabase/schema.sql` — the `handle_new_user` trigger creates profiles on signup |
+| Auth redirect fails | Callback URL not added | Add `https://your-site.vercel.app/auth/callback` in Supabase → Auth → URL Configuration |
+| Can't log in after signup | Email not confirmed | Check Supabase → Authentication → Users. For testing, you can disable email confirmation in Auth → Providers → Email |
+
+---
+
+## Local Development
+
+```bash
+# Install dependencies
+npm install
+
+# Copy env file and fill in your Supabase keys
+cp .env.local.example .env.local
+
+# Start dev server
+npm run dev
+```
+
+Then open [http://localhost:3000](http://localhost:3000).
+
+For local auth to work, also add `http://localhost:3000/auth/callback` to your Supabase redirect URLs (Step 5 above).
 
 ## Deploy on Vercel
 
-### ⚠️ IMPORTANT: You Have Multiple Repos With Similar Names!
+> **⚠️ You have multiple repos with similar names!** Make sure Vercel is connected to **`CG-Recruiting-and-Development-`** (hyphens, includes "and", trailing hyphen) — NOT `CG_Recruiting-Development-` which only has a README.
 
-Your GitHub account has several repos with similar names. **Vercel must be connected to the correct one**:
-
-| Repository | Has App Code? | Use This? |
-|---|---|---|
-| **`CG-Recruiting-and-Development-`** | ✅ Yes — full Next.js app | ✅ **USE THIS ONE** |
-| `CG_Recruiting-Development-` | ❌ Only has a README | ❌ Wrong repo |
-| `CG3-Recruiting-and-Development-` | ❌ Empty | ❌ Wrong repo |
-| `cg_3-recruiting-and-development-` | ❌ Empty | ❌ Wrong repo |
-
-The correct repository is: **`ChaseLGrant/CG-Recruiting-and-Development-`** (note: hyphens not underscores, "and" included, trailing hyphen)
-
-### Vercel Setup
-
-1. Go to [Vercel Dashboard](https://vercel.com/dashboard) → click **Add New...** → **Project**
+1. Go to [Vercel Dashboard](https://vercel.com/dashboard) → **Add New...** → **Project**
 2. Import: **`CG-Recruiting-and-Development-`**
 3. Framework Preset: **Next.js** ✓
-4. Add environment variables (see Step 4 above)
+4. Add your Supabase env vars (see Step 4 above)
 5. Click **Deploy**
 
-### Production Branch
-
-Make sure Vercel is set to deploy from the **`main`** branch:
-- Vercel Dashboard → Project → Settings → Git → **Production Branch** should be `main`
-
-Check out the [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Production branch should be **`main`** (Vercel → Settings → Git → Production Branch).
