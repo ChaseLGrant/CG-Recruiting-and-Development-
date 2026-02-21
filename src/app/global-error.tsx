@@ -1,6 +1,7 @@
 'use client'
 
 export default function GlobalError({
+  error,
   reset,
 }: {
   error: Error & { digest?: string }
@@ -52,6 +53,17 @@ export default function GlobalError({
             An unexpected error occurred. Please try again or return to the home
             page.
           </p>
+          {error.digest && (
+            <p
+              style={{
+                color: '#666',
+                fontSize: '0.75rem',
+                marginBottom: '1.5rem',
+              }}
+            >
+              Error ID: {error.digest}
+            </p>
+          )}
           <div
             style={{
               display: 'flex',
