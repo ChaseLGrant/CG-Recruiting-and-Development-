@@ -13,5 +13,13 @@ export function createClient() {
     )
   }
 
-  return createBrowserClient(url, key)
+  try {
+    return createBrowserClient(url, key)
+  } catch {
+    // If env vars are malformed, fall back to placeholder to prevent crashes
+    return createBrowserClient(
+      'https://placeholder.supabase.co',
+      'placeholder-key'
+    )
+  }
 }

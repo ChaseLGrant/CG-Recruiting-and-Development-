@@ -14,30 +14,32 @@ export async function middleware(request: NextRequest) {
     return supabaseResponse
   }
 
-  const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
-    cookies: {
-      getAll() {
-        return request.cookies.getAll()
-      },
-      setAll(cookiesToSet) {
-        cookiesToSet.forEach(({ name, value }) =>
-          request.cookies.set(name, value)
-        )
-        supabaseResponse = NextResponse.next({
-          request,
-        })
-        cookiesToSet.forEach(({ name, value, options }) =>
-          supabaseResponse.cookies.set(name, value, options)
-        )
-      },
-    },
-  })
-
-  // Refresh the auth token — this is the critical call that keeps sessions alive
+  // Wrap ALL Supabase interaction in try-catch to prevent middleware from
+  // crashing the page if env vars are malformed or Supabase is unreachable
   try {
+    const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll()
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) =>
+            request.cookies.set(name, value)
+          )
+          supabaseResponse = NextResponse.next({
+            request,
+          })
+          cookiesToSet.forEach(({ name, value, options }) =>
+            supabaseResponse.cookies.set(name, value, options)
+          )
+        },
+      },
+    })
+
+    // Refresh the auth token — this is the critical call that keeps sessions alive
     await supabase.auth.getUser()
   } catch {
-    // If Supabase is unreachable, let the request through without blocking
+    // If Supabase client creation fails or is unreachable, let the request through
   }
 
   return supabaseResponse
