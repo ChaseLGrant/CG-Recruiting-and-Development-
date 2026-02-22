@@ -36,8 +36,12 @@ export async function middleware(request: NextRequest) {
       },
     })
 
-    // Refresh the auth token — this is the critical call that keeps sessions alive
-    await supabase.auth.getUser()
+    // Refresh the auth token with a timeout to prevent hanging requests.
+    // If Supabase is unreachable, we don't want to block page loads.
+    await Promise.race([
+      supabase.auth.getUser(),
+      new Promise((resolve) => setTimeout(resolve, 3000)),
+    ])
   } catch {
     // If Supabase client creation fails or is unreachable, let the request through
   }

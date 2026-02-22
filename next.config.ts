@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // Ensure Supabase packages are bundled correctly on Vercel
+  serverExternalPackages: [],
 };
 
 export default nextConfig;

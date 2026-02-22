@@ -1,6 +1,10 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase-server'
 
+// Dashboard always needs cookies/auth — force dynamic to prevent
+// DYNAMIC_SERVER_USAGE errors during `next build` when env vars are set.
+export const dynamic = 'force-dynamic'
+
 export default async function DashboardLayout({
   children,
 }: {
