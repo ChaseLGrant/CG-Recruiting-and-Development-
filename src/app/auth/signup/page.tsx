@@ -4,14 +4,24 @@ import { useState, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase-browser'
+import { ensureProfile } from '@/lib/ensure-profile'
 import type { UserRole } from '@/lib/types'
 
 const CONNECTION_ERROR =
   'Could not connect to the database. This usually means the Supabase environment variables are missing or incorrect. ' +
   'Visit the /setup page for a step-by-step guide, or check that NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY are set in Vercel → Settings → Environment Variables, then redeploy.'
 
+const DATABASE_SCHEMA_ERROR =
+  'Your Supabase database schema is not set up yet. ' +
+  'Go to your Supabase dashboard → SQL Editor → New query → paste the contents of supabase/schema.sql → click Run. ' +
+  'Then try signing up again.'
+
 function isFetchError(message: string) {
   return message === 'Failed to fetch' || message.includes('fetch')
+}
+
+function isDatabaseSchemaError(message: string) {
+  return message.includes('Database error saving new user')
 }
 
 function SignUpForm() {
@@ -25,6 +35,7 @@ function SignUpForm() {
   const [fullName, setFullName] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [showSetupLink, setShowSetupLink] = useState(false)
   const [success, setSuccess] = useState(false)
 
   const supabase = createClient()
@@ -33,6 +44,7 @@ function SignUpForm() {
     e.preventDefault()
     setLoading(true)
     setError('')
+    setShowSetupLink(false)
 
     try {
       const { data, error: signUpError } = await supabase.auth.signUp({
@@ -44,7 +56,15 @@ function SignUpForm() {
       })
 
       if (signUpError) {
-        setError(isFetchError(signUpError.message) ? CONNECTION_ERROR : signUpError.message)
+        if (isDatabaseSchemaError(signUpError.message)) {
+          setError(DATABASE_SCHEMA_ERROR)
+          setShowSetupLink(true)
+        } else if (isFetchError(signUpError.message)) {
+          setError(CONNECTION_ERROR)
+          setShowSetupLink(true)
+        } else {
+          setError(signUpError.message)
+        }
         setLoading(false)
         return
       }
@@ -64,10 +84,16 @@ function SignUpForm() {
         return
       }
 
+      // Session exists — ensure profile row is present (fallback for missing trigger)
+      if (data.user) {
+        await ensureProfile(supabase, data.user)
+      }
+
       router.push(`/dashboard/${role}`)
     } catch (err) {
       if (err instanceof TypeError && isFetchError(err.message)) {
         setError(CONNECTION_ERROR)
+        setShowSetupLink(true)
       } else {
         setError(err instanceof Error ? err.message : 'An unexpected error occurred')
       }
@@ -162,7 +188,7 @@ function SignUpForm() {
           {error && (
             <div className="rounded-lg bg-error/10 px-4 py-2 text-sm text-error">
               {error}
-              {error.includes('Could not connect') && (
+              {showSetupLink && (
                 <Link href="/setup" className="mt-2 block font-semibold text-accent underline">
                   Open Setup Guide →
                 </Link>

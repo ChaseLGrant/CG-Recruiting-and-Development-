@@ -262,6 +262,11 @@ create policy "Authenticated users can create inquiries"
 -- ============================================================
 -- FUNCTION: Handle new user signup → auto-create profile
 -- ============================================================
+-- The function uses security definer so it runs with the
+-- privileges of the function owner (postgres) and can bypass RLS.
+-- The exception block ensures that a trigger failure never
+-- prevents the auth.users row from being created — the app
+-- will create the profile as a fallback on first login.
 create or replace function public.handle_new_user()
 returns trigger as $$
 begin
@@ -272,6 +277,9 @@ begin
     coalesce(new.raw_user_meta_data->>'role', 'player')::user_role,
     coalesce(new.raw_user_meta_data->>'full_name', '')
   );
+  return new;
+exception when others then
+  raise warning 'handle_new_user failed for user %: %', new.id, sqlerrm;
   return new;
 end;
 $$ language plpgsql security definer;
