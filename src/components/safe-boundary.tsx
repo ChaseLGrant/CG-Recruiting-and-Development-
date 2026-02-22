@@ -21,6 +21,10 @@ export class SafeBoundary extends Component<Props, State> {
     return { hasError: true }
   }
 
+  componentDidCatch(error: Error) {
+    console.error('SafeBoundary caught error:', error)
+  }
+
   render() {
     if (this.state.hasError) {
       return this.props.fallback ?? null

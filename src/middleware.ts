@@ -32,8 +32,9 @@ export async function middleware(request: NextRequest) {
 
     // Refresh the auth session if it exists
     await supabase.auth.getUser()
-  } catch {
+  } catch (e) {
     // If Supabase is unreachable, let the request through
+    console.error('Middleware Supabase session refresh failed:', e)
   }
 
   return supabaseResponse
