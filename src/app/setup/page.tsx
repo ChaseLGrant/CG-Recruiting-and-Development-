@@ -216,6 +216,40 @@ export default function SetupPage() {
         </p>
       </SetupStep>
 
+      {/* Troubleshooting */}
+      <SetupStep
+        number={6}
+        title="Still seeing a blank page?"
+        done={allGood}
+      >
+        <p className="mb-3 text-sm text-muted">
+          If your site still doesn&apos;t load after adding env vars, try these steps:
+        </p>
+        <ol className="list-decimal space-y-2 pl-5 text-sm">
+          <li>
+            <strong className="text-accent">Clear Vercel build cache &amp; redeploy:</strong>
+            <br />
+            Vercel → Deployments → click <strong>⋮</strong> on the latest → <strong>Redeploy</strong> → check <strong>&quot;Clear Build Cache&quot;</strong> → <strong>Redeploy</strong>
+          </li>
+          <li>
+            <strong>Verify env var names are exact:</strong>
+            <br />
+            In Vercel → Settings → Environment Variables, make sure the keys are exactly:
+            <code className="ml-1 rounded bg-surface-2 px-1 text-xs">NEXT_PUBLIC_SUPABASE_URL</code> and
+            <code className="ml-1 rounded bg-surface-2 px-1 text-xs">NEXT_PUBLIC_SUPABASE_ANON_KEY</code>
+          </li>
+          <li>
+            <strong>Check for hidden characters:</strong> Copy-paste the values fresh from Supabase — no leading/trailing spaces, no smart quotes
+          </li>
+          <li>
+            <strong>Env vars must be set for &quot;Production&quot;:</strong> In Vercel, make sure the environment dropdown includes <strong>Production</strong> (not just Preview or Development)
+          </li>
+          <li>
+            <strong>Check Vercel build logs:</strong> Vercel → Deployments → click the latest deployment → <strong>Building</strong> tab to see if the build failed
+          </li>
+        </ol>
+      </SetupStep>
+
       {/* Final CTA */}
       <div className="mt-8 rounded-xl border border-border bg-surface p-6 text-center">
         <h3 className="mb-2 font-bold">Done? Check your connection:</h3>
