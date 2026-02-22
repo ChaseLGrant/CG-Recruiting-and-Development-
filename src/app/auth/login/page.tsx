@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase-browser'
+import { ensureProfile } from '@/lib/ensure-profile'
 
 const CONNECTION_ERROR =
   'Could not connect to the database. This usually means the Supabase environment variables are missing or incorrect. ' +
@@ -44,6 +45,9 @@ export default function LoginPage() {
         setLoading(false)
         return
       }
+
+      // Ensure profile exists (fallback for missing/failed trigger)
+      await ensureProfile(supabase, data.user)
 
       const { data: profile } = await supabase
         .from('profiles')

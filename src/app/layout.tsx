@@ -3,6 +3,7 @@ import "./globals.css";
 import { Navbar } from "@/components/navbar";
 import { NavbarErrorBoundary } from "@/components/navbar-error-boundary";
 import { SupabaseStatus } from "@/components/SupabaseStatus";
+import { SafeBoundary } from "@/components/safe-boundary";
 
 export const metadata: Metadata = {
   title: "Summer Ball Portal",
@@ -29,7 +30,7 @@ export default function RootLayout({
         <footer className="border-t border-border bg-surface py-8">
           <div className="mx-auto max-w-7xl px-4 text-center text-sm text-muted">
             <p>&copy; {new Date().getFullYear()} Summer Ball Portal. All rights reserved.</p>
-            <div className="mt-2"><SupabaseStatus /></div>
+            <div className="mt-2"><SafeBoundary><SupabaseStatus /></SafeBoundary></div>
           </div>
         </footer>
       </body>
