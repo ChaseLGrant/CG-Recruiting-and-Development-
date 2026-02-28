@@ -1,50 +1,182 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-background: #0a0a0a;
-  --color-foreground: #ededed;
-  --color-accent: #f97316;
-  --color-accent-hover: #ea580c;
-  --color-accent-light: #fed7aa;
-  --color-surface: #141414;
-  --color-surface-2: #1e1e1e;
-  --color-surface-3: #2a2a2a;
-  --color-border: #333333;
-  --color-border-light: #444444;
-  --color-muted: #888888;
+  /* Core palette */
+  --color-background: #09090b;
+  --color-foreground: #fafafa;
+  --color-accent: #3b82f6;
+  --color-accent-hover: #2563eb;
+  --color-accent-light: #dbeafe;
+  --color-accent-glow: rgba(59, 130, 246, 0.3);
+
+  /* Surfaces */
+  --color-surface: #111113;
+  --color-surface-2: #18181b;
+  --color-surface-3: #27272a;
+
+  /* Borders */
+  --color-border: #27272a;
+  --color-border-light: #3f3f46;
+
+  /* Text */
+  --color-muted: #71717a;
+  --color-muted-2: #52525b;
+
+  /* Status */
   --color-success: #22c55e;
   --color-error: #ef4444;
-  --color-warning: #eab308;
+}
+
+/* ─── Base ─────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--color-background);
   color: var(--color-foreground);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-::-webkit-scrollbar-track {
-  background: var(--color-surface);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--color-border);
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-border-light);
+/* ─── Typography ────────────────────────────────────────── */
+h1, h2, h3, h4, h5, h6 {
+  letter-spacing: -0.02em;
+  line-height: 1.1;
 }
 
-/* Focus ring */
+/* ─── Focus ─────────────────────────────────────────────── */
 *:focus-visible {
   outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
+  outline-offset: 3px;
+  border-radius: 4px;
 }
 
-/* Smooth transitions */
+/* ─── Transitions ───────────────────────────────────────── */
 a, button {
-  transition: all 0.15s ease;
+  transition: all 0.18s ease;
+}
+
+/* ─── Scrollbar ─────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--color-surface); }
+::-webkit-scrollbar-thumb { background: var(--color-border-light); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-muted); }
+
+/* ─── Keyframes ─────────────────────────────────────────── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-24px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px 0 var(--color-accent-glow); }
+  50%       { box-shadow: 0 0 40px 8px var(--color-accent-glow); }
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50%       { background-position: 100% 50%; }
+}
+
+/* ─── Animation Utilities ───────────────────────────────── */
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease both;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease both;
+}
+
+.animate-marquee {
+  animation: marquee 28s linear infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+/* Staggered delays */
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
+.delay-500 { animation-delay: 0.5s; }
+.delay-600 { animation-delay: 0.6s; }
+.delay-700 { animation-delay: 0.7s; }
+
+/* ─── Gradient Utilities ────────────────────────────────── */
+.gradient-text {
+  background: linear-gradient(135deg, #fff 0%, #a1c4fd 50%, #3b82f6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-accent {
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
+}
+
+.hero-gradient {
+  background: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(59,130,246,0.18) 0%, transparent 70%);
+}
+
+.card-gradient {
+  background: linear-gradient(135deg, var(--color-surface-2) 0%, var(--color-surface-3) 100%);
+}
+
+/* ─── Glow Effects ──────────────────────────────────────── */
+.glow-accent {
+  box-shadow: 0 0 30px rgba(59, 130, 246, 0.25);
+}
+
+.btn-glow:hover {
+  box-shadow: 0 0 24px rgba(59, 130, 246, 0.5), 0 4px 16px rgba(0,0,0,0.3);
+}
+
+/* ─── Grid Pattern ──────────────────────────────────────── */
+.grid-pattern {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* ─── Glass ─────────────────────────────────────────────── */
+.glass {
+  background: rgba(9, 9, 11, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* ─── Section spacing ───────────────────────────────────── */
+.section-padding {
+  padding-top: 5rem;
+  padding-bottom: 5rem;
+}
+
+@media (min-width: 768px) {
+  .section-padding {
+    padding-top: 7rem;
+    padding-bottom: 7rem;
+  }
 }
