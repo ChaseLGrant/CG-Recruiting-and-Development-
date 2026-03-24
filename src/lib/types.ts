@@ -1,4 +1,4 @@
-export type UserRole = 'player' | 'coach' | 'team'
+export type UserRole = 'player' | 'coach' | 'team' | 'host'
 
 export interface Profile {
   id: string
@@ -107,6 +107,43 @@ export interface BulkPlayerRow {
   notes: string
   _error?: string
   _saved?: boolean
+}
+
+// ============================================================
+// Run It — Tournament Types
+// ============================================================
+
+export type TournamentFormat = 'bracket' | 'round_robin'
+export type TournamentSport = 'baseball' | 'softball'
+export type PaymentStatus = 'pending' | 'paid' | 'free' | 'failed'
+
+export interface Tournament {
+  id: string
+  host_id: string
+  name: string
+  location: string
+  date: string
+  max_teams: number
+  entry_fee: number
+  description: string | null
+  format: TournamentFormat
+  sport: TournamentSport
+  is_active: boolean
+  created_at: string
+  profiles?: { full_name: string | null; email: string }
+  tournament_registrations?: TournamentRegistration[]
+}
+
+export interface TournamentRegistration {
+  id: string
+  tournament_id: string
+  user_id: string
+  team_name: string
+  payment_status: PaymentStatus
+  stripe_session_id: string | null
+  amount_paid: number | null
+  created_at: string
+  tournaments?: Tournament
 }
 
 export const POSITIONS = [

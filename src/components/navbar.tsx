@@ -23,7 +23,6 @@ export function Navbar() {
           if (data) setProfile(data)
         }
       } catch (err) {
-        // Supabase not configured or unreachable — navbar still works without auth
         console.error('Navbar auth check failed:', err)
       }
     }
@@ -42,38 +41,39 @@ export function Navbar() {
     : '/auth/login'
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-border bg-surface/80 backdrop-blur-md">
+    <nav className="sticky top-0 z-50 border-b border-border bg-surface/90 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
-        <Link href="/" className="flex items-center gap-2 text-lg font-bold">
+        {/* Logo */}
+        <Link href="/" className="flex items-center gap-2.5 text-lg font-black">
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent text-sm font-black text-white">
-            SB
+            RI
           </span>
-          <span className="hidden sm:inline">Summer Ball Portal</span>
+          <span className="tracking-tight">Run It</span>
         </Link>
 
         {/* Desktop nav */}
         <div className="hidden items-center gap-6 md:flex">
-          <Link href="/players" className="text-sm text-muted hover:text-foreground">
-            Browse Players
+          <Link href="/tournaments" className="text-sm text-muted hover:text-foreground transition-colors">
+            Browse
           </Link>
-          <Link href="/listings" className="text-sm text-muted hover:text-foreground">
-            Browse Listings
+          <Link href="/tournaments/create" className="text-sm text-muted hover:text-foreground transition-colors">
+            Create Tournament
           </Link>
           {profile ? (
             <>
-              <Link href={dashboardLink} className="text-sm text-muted hover:text-foreground">
+              <Link href={dashboardLink} className="text-sm text-muted hover:text-foreground transition-colors">
                 Dashboard
               </Link>
               <button
                 onClick={handleSignOut}
-                className="rounded-lg bg-surface-2 px-4 py-2 text-sm text-muted hover:text-foreground"
+                className="rounded-lg border border-border bg-surface-2 px-4 py-2 text-sm text-muted hover:text-foreground transition-colors"
               >
                 Sign Out
               </button>
             </>
           ) : (
             <>
-              <Link href="/auth/login" className="text-sm text-muted hover:text-foreground">
+              <Link href="/auth/login" className="text-sm text-muted hover:text-foreground transition-colors">
                 Log In
               </Link>
               <Link
@@ -90,6 +90,7 @@ export function Navbar() {
         <button
           className="flex h-10 w-10 items-center justify-center rounded-lg text-muted hover:text-foreground md:hidden"
           onClick={() => setMenuOpen(!menuOpen)}
+          aria-label="Toggle menu"
         >
           <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             {menuOpen ? (
@@ -104,12 +105,12 @@ export function Navbar() {
       {/* Mobile menu */}
       {menuOpen && (
         <div className="border-t border-border bg-surface px-4 py-4 md:hidden">
-          <div className="flex flex-col gap-3">
-            <Link href="/players" className="text-sm text-muted hover:text-foreground" onClick={() => setMenuOpen(false)}>
-              Browse Players
+          <div className="flex flex-col gap-4">
+            <Link href="/tournaments" className="text-sm text-muted hover:text-foreground" onClick={() => setMenuOpen(false)}>
+              Browse Tournaments
             </Link>
-            <Link href="/listings" className="text-sm text-muted hover:text-foreground" onClick={() => setMenuOpen(false)}>
-              Browse Listings
+            <Link href="/tournaments/create" className="text-sm text-muted hover:text-foreground" onClick={() => setMenuOpen(false)}>
+              Create Tournament
             </Link>
             {profile ? (
               <>
@@ -125,7 +126,11 @@ export function Navbar() {
                 <Link href="/auth/login" className="text-sm text-muted hover:text-foreground" onClick={() => setMenuOpen(false)}>
                   Log In
                 </Link>
-                <Link href="/auth/signup" className="text-sm font-semibold text-accent" onClick={() => setMenuOpen(false)}>
+                <Link
+                  href="/auth/signup"
+                  className="inline-block rounded-lg bg-accent px-4 py-2 text-center text-sm font-semibold text-white hover:bg-accent-hover"
+                  onClick={() => setMenuOpen(false)}
+                >
                   Sign Up
                 </Link>
               </>
