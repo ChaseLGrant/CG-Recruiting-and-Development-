@@ -55,7 +55,7 @@ export default function LoginPage() {
         .eq('id', data.user.id)
         .single()
 
-      router.push(`/dashboard/${profile?.role || 'player'}`)
+      router.push(`/dashboard/${profile?.role || 'host'}`)
     } catch (err) {
       if (err instanceof TypeError && isFetchError(err.message)) {
         setError(CONNECTION_ERROR)
@@ -69,8 +69,12 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-[80vh] items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
+        <div className="mb-4 flex items-center gap-2">
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent text-sm font-black text-white">RI</span>
+          <span className="text-sm font-semibold text-muted">Run It</span>
+        </div>
         <h1 className="mb-2 text-3xl font-bold">Welcome Back</h1>
-        <p className="mb-8 text-muted">Log in to Summer Ball Portal</p>
+        <p className="mb-8 text-muted">Log in to your Run It account</p>
 
         <form onSubmit={handleLogin} className="space-y-6">
           <div>

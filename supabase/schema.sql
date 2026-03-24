@@ -1,5 +1,6 @@
 -- ============================================================
--- Summer Ball Portal — Supabase Schema
+-- Run It — Supabase Schema
+-- Tournament platform for baseball & softball teams
 -- ============================================================
 
 -- 0. Extensions
@@ -7,8 +8,14 @@ create extension if not exists "uuid-ossp";
 
 -- 1. Custom types
 do $$ begin
-  create type user_role as enum ('player', 'coach', 'team');
+  create type user_role as enum ('player', 'coach', 'team', 'host');
 exception when duplicate_object then null;
+end $$;
+
+-- If enum already exists from old schema, add 'host' value safely
+do $$ begin
+  alter type user_role add value if not exists 'host';
+exception when others then null;
 end $$;
 
 do $$ begin
@@ -288,3 +295,91 @@ drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute function public.handle_new_user();
+
+-- ============================================================
+-- RUN IT — TOURNAMENT TABLES
+-- ============================================================
+
+-- Tournaments
+create table if not exists tournaments (
+  id uuid primary key default uuid_generate_v4(),
+  host_id uuid not null references profiles(id) on delete cascade,
+  name text not null,
+  location text not null,
+  date date not null,
+  max_teams int not null default 8,
+  entry_fee numeric(10,2) not null default 0,
+  description text,
+  format text not null default 'bracket', -- 'bracket' | 'round_robin'
+  sport text not null default 'baseball',  -- 'baseball' | 'softball'
+  is_active boolean default true,
+  created_at timestamptz default now()
+);
+
+-- Tournament Registrations
+create table if not exists tournament_registrations (
+  id uuid primary key default uuid_generate_v4(),
+  tournament_id uuid not null references tournaments(id) on delete cascade,
+  user_id uuid not null references profiles(id) on delete cascade,
+  team_name text not null,
+  payment_status text not null default 'pending', -- 'pending' | 'paid' | 'free'
+  stripe_session_id text,
+  amount_paid numeric(10,2),
+  created_at timestamptz default now(),
+  unique(tournament_id, user_id)
+);
+
+-- ============================================================
+-- INDEXES for tournaments
+-- ============================================================
+create index if not exists idx_tournaments_host on tournaments(host_id);
+create index if not exists idx_tournaments_date on tournaments(date);
+create index if not exists idx_registrations_tournament on tournament_registrations(tournament_id);
+create index if not exists idx_registrations_user on tournament_registrations(user_id);
+
+-- ============================================================
+-- RLS for tournaments
+-- ============================================================
+
+alter table tournaments enable row level security;
+
+drop policy if exists "Tournaments are viewable by everyone" on tournaments;
+create policy "Tournaments are viewable by everyone"
+  on tournaments for select using (true);
+
+drop policy if exists "Hosts can create tournaments" on tournaments;
+create policy "Hosts can create tournaments"
+  on tournaments for insert with check (auth.uid() = host_id);
+
+drop policy if exists "Hosts can update own tournaments" on tournaments;
+create policy "Hosts can update own tournaments"
+  on tournaments for update using (auth.uid() = host_id);
+
+drop policy if exists "Hosts can delete own tournaments" on tournaments;
+create policy "Hosts can delete own tournaments"
+  on tournaments for delete using (auth.uid() = host_id);
+
+-- RLS for tournament_registrations
+alter table tournament_registrations enable row level security;
+
+drop policy if exists "Registrations are viewable by everyone" on tournament_registrations;
+create policy "Registrations are viewable by everyone"
+  on tournament_registrations for select using (true);
+
+drop policy if exists "Authenticated users can register" on tournament_registrations;
+create policy "Authenticated users can register"
+  on tournament_registrations for insert with check (auth.uid() = user_id);
+
+drop policy if exists "Users can update own registrations" on tournament_registrations;
+create policy "Users can update own registrations"
+  on tournament_registrations for update using (
+    auth.uid() = user_id
+    or exists (
+      select 1 from tournaments t where t.id = tournament_id and t.host_id = auth.uid()
+    )
+  );
+
+drop policy if exists "Service role can update registrations" on tournament_registrations;
+create policy "Service role can update registrations"
+  on tournament_registrations for update using (true)
+  with check (true);
