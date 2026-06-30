@@ -12,11 +12,12 @@ export default function HomePage() {
             Summer 2026 Season
           </div>
           <h1 className="mb-6 text-4xl font-black tracking-tight sm:text-5xl md:text-6xl">
+            <span className="sr-only">CG Recruiting and Development - </span>
             Connect Players with
             <span className="block text-accent">Summer Ball Opportunities</span>
           </h1>
           <p className="mx-auto mb-10 max-w-2xl text-lg text-muted sm:text-xl">
-            The marketplace for college programs, summer teams, and players.
+            CG Recruiting and Development is the marketplace for college baseball programs, summer teams, and players.
             Post available players, find roster spots, and build your summer roster.
           </p>
           <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">

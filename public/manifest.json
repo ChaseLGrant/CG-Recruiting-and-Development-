@@ -1,0 +1,17 @@
+{
+  "name": "CG Recruiting and Development",
+  "short_name": "CG Recruiting",
+  "description": "Summer college baseball recruiting platform - connecting players, coaches, and summer teams",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#2563eb",
+  "categories": ["sports", "education"],
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64",
+      "type": "image/x-icon"
+    }
+  ]
+}
