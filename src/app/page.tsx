@@ -12,7 +12,7 @@ export default function HomePage() {
             Summer 2026 Season
           </div>
           <h1 className="mb-6 text-4xl font-black tracking-tight sm:text-5xl md:text-6xl">
-            <span className="sr-only">CG Recruiting and Development - </span>
+            <span className="sr-only">CG Recruiting and Development:</span>
             Connect Players with
             <span className="block text-accent">Summer Ball Opportunities</span>
           </h1>

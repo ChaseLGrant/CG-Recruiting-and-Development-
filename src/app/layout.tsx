@@ -90,11 +90,10 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "Organization",
               name: "CG Recruiting and Development",
-              alternateName: ["CG Recruiting", "CG Baseball Recruiting", "CG Development"],
+              alternateName: "CG Recruiting",
               description:
                 "CG Recruiting and Development is a summer college baseball recruiting platform connecting players, coaches, and summer teams.",
               url: "https://cg-recruiting.vercel.app",
-              sameAs: [],
               contactPoint: {
                 "@type": "ContactPoint",
                 contactType: "customer service",
