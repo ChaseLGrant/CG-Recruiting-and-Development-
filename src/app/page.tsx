@@ -1,8 +1,39 @@
 import Link from 'next/link'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Summer Ball Portal for College Baseball Players',
+  description:
+    'Browse hundreds of college baseball players available for summer ball. Coaches post players, summer teams find talent, and players connect with opportunities across the country.',
+  alternates: {
+    canonical: 'https://www.cgrecruitingbaseball.com',
+  },
+}
 
 export default function HomePage() {
   return (
     <div className="flex flex-col">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'WebSite',
+            name: 'CG Recruiting Baseball',
+            url: 'https://www.cgrecruitingbaseball.com',
+            description:
+              'The marketplace connecting college baseball players, coaches, and summer teams.',
+            potentialAction: {
+              '@type': 'SearchAction',
+              target: {
+                '@type': 'EntryPoint',
+                urlTemplate: 'https://www.cgrecruitingbaseball.com/players?q={search_term_string}',
+              },
+              'query-input': 'required name=search_term_string',
+            },
+          }),
+        }}
+      />
       {/* Hero */}
       <section className="relative flex min-h-[70vh] flex-col items-center justify-center px-4 text-center">
         <div className="absolute inset-0 bg-gradient-to-b from-accent/5 via-transparent to-transparent" />
